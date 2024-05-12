@@ -1,8 +1,8 @@
 players:
   - name: Alice
-    is_ai: false
+    is_ai: true
   - name: Bob
-    is_ai: false
+    is_ai: true
   - name: Charlie
     is_ai: true
 location: Beach
