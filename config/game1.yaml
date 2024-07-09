@@ -1,9 +1,0 @@
-players:
-  - name: Alice
-    is_ai: true
-  - name: Bob
-    is_ai: true
-  - name: Charlie
-    is_ai: true
-location: Beach
-rounds: 1
