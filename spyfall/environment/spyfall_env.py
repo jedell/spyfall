@@ -1,7 +1,8 @@
 """
 Spyfall Environment for multi-agent social deduction game.
 """
-
+import requests
+import json
 import random
 from typing import List, Union
 
@@ -372,25 +373,16 @@ class SpyfallEnv(AECEnv):
     def action_space(self, agent):
         return self.action_spaces[agent]
 
-# Test
+def init_env(num_players: int, device: torch.device):
+    response = requests.get("https://raw.githubusercontent.com/PepsRyuu/spyfall/master/locations.json")
+    locations= json.loads(response.text)['locations']
 
-# load json from https://raw.githubusercontent.com/PepsRyuu/spyfall/master/locations.json
-# schema locations: [{title: str, roles: [str]}]
-import requests
-import json
+    env = SpyfallEnv(num_players=num_players, locations=locations)
 
-response = requests.get("https://raw.githubusercontent.com/PepsRyuu/spyfall/master/locations.json")
-locations= json.loads(response.text)['locations']
+    return PettingZooWrapper(env=env, use_mask=True, device=device, categorical_actions=False)
 
-env = SpyfallEnv(num_players=4, locations=locations)
-# observations, infos = env.reset()
-
-max_steps = 30
-
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-wrapped_env = PettingZooWrapper(env=env, use_mask=True, device=device, categorical_actions=False)
-
-wrapped_env.rollout(max_steps)
+if __name__ == "__main__":
+    max_steps = 30
+    wrapped_env = init_env(num_players=4)
+    wrapped_env.rollout(max_steps)
 
