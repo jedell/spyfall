@@ -8,6 +8,7 @@ def interactive_simulation(env):
     print(f"Player: {player}")
     while True:
         current_agent = env.agent_selection
+        message = None
         if current_agent == player:
             print(f"\nCurrent Agent: {current_agent}")
             print(f"Dialogue History: {env.dialogue_history}")
@@ -24,17 +25,20 @@ def interactive_simulation(env):
 
             action = np.full((5, env.num_players), -np.inf)
             action[action_type, target_agent] = 1
+            print(f"Action: {action}")
 
+            message = input("Enter your dialogue message: ")
+        else:
+            # random action for now
+            action = torch.rand((5, env.num_players))
+
+        env.set_player_message(message)
         observations, rewards, terminations, truncations, infos = env.step(action)
+        env.set_player_message(None)
 
         if all(terminations.values()):
             print("Game over!")
             break
-
-        print(f"Observations: {observations}")
-        print(f"Rewards: {rewards}")
-        print(f"Terminations: {terminations}")
-        print(f"Truncations: {truncations}")
 
 if __name__ == "__main__":
     num_players = 4

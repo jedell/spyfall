@@ -48,6 +48,7 @@ class SpyfallEnv(AECEnv):
             
         self.dialogue_agent = DialogueAgent(self.spy_idx, locations, OpenAIGenerator(OPENAI_API_KEY))
         self.dialogue_history = None
+        self.player_message = None
 
         # observation space is encoded dialogue history
         self.observation_spaces = {
@@ -66,6 +67,10 @@ class SpyfallEnv(AECEnv):
  
         self.action_masks = {}
         self.agent_selection = self.possible_agents[0]
+
+    def set_player_message(self, message):
+        print(f"Setting player message: {message}")
+        self.player_message = message
 
     def _select_location(self):
         return random.choice(self.locations)
@@ -214,16 +219,19 @@ class SpyfallEnv(AECEnv):
         self.dialogue_history.append((current_agent, action_type, target_agent, dialogue))
 
     def handle_action(self, current_agent, action_type, target_agent, dialogue_template: str):
-        message = self.dialogue_agent.act(
-            {
-                "current_player": current_agent, 
-                "num_players": self.num_players, 
-                "location": self.location, 
-                "role": self.roles[current_agent], 
-                "dialogue_history": self.dialogue_history
-            },
-            [action_type, target_agent]
-        )
+        if self.player_message is not None:
+            message = self.player_message
+        else:
+            message = self.dialogue_agent.act(
+                {
+                    "current_player": current_agent, 
+                    "num_players": self.num_players, 
+                    "location": self.location, 
+                    "role": self.roles[current_agent], 
+                    "dialogue_history": self.dialogue_history
+                },
+                [action_type, target_agent]
+            )
 
         dialogue = dialogue_template.format(current_agent=current_agent, target_agent=target_agent, message=message)
         self.add_dialogue_history(current_agent, action_type, target_agent, dialogue)
