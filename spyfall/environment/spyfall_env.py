@@ -27,9 +27,10 @@ class SpyfallEnv(AECEnv):
         "description": "Multi-agent social deduction game.",
     }
 
-    def __init__(self, num_players, locations: List[dict]=None):
+    def __init__(self, num_players, observation_dim, locations: List[dict]=None):
         super().__init__()
         self.num_players = num_players
+        self.observation_dim = observation_dim
         self.locations = locations
         self.location = None
         self.roles = None
@@ -50,7 +51,7 @@ class SpyfallEnv(AECEnv):
 
         # observation space is encoded dialogue history
         self.observation_spaces = {
-            a: Box(low=-np.inf, high=np.inf, shape=(768,))
+            a: Box(low=-np.inf, high=np.inf, shape=(self.observation_dim,))
             for a in self.possible_agents
         }
 
@@ -62,6 +63,7 @@ class SpyfallEnv(AECEnv):
             )  # 5 action types, num_players target agents
             for a in self.possible_agents   
         }
+        print(self.action_spaces["agent_0"])
  
         self.action_masks = {}
         self.agent_selection = self.possible_agents[0]
@@ -182,7 +184,7 @@ class SpyfallEnv(AECEnv):
             outer_product = np.outer(action_mask, agent_mask)
             self.action_masks[a] = outer_product
 
-        encoded_dialogue_history = torch.rand(768)
+        encoded_dialogue_history = torch.rand(self.observation_dim)
         self.observations = {a: {
             "observation": encoded_dialogue_history,
             # "action_mask": self.action_masks[a]
@@ -344,7 +346,7 @@ class SpyfallEnv(AECEnv):
             self.terminations = {a: True for a in self.agents}
             self.truncations = {a: True for a in self.agents}
 
-        encoded_dialogue_history = torch.rand(768)
+        encoded_dialogue_history = torch.rand(self.observation_dim)
         self.observations = {a: encoded_dialogue_history for a in self.agents}
         self.infos = {a: {
             "action_mask": self.action_masks[a],
@@ -367,22 +369,32 @@ class SpyfallEnv(AECEnv):
     
     def observe(self, agent):
         # TODO encoded dialogue history as vector
-        encoded_dialogue_history = torch.rand((1, 768))
+        encoded_dialogue_history = torch.rand((1, self.observation_dim))
         return encoded_dialogue_history
 
     def action_space(self, agent):
         return self.action_spaces[agent]
 
-def init_env(num_players: int, device: torch.device):
+def init_env(num_players: int, observation_dim: int, device: torch.device) -> PettingZooWrapper:
     response = requests.get("https://raw.githubusercontent.com/PepsRyuu/spyfall/master/locations.json")
     locations= json.loads(response.text)['locations']
 
-    env = SpyfallEnv(num_players=num_players, locations=locations)
+    env = SpyfallEnv(
+        num_players=num_players,
+        locations=locations,
+        observation_dim=observation_dim
+    )
 
-    return PettingZooWrapper(env=env, use_mask=True, device=device, categorical_actions=False)
+    return PettingZooWrapper(
+        env=env,
+        use_mask=True,
+        device=device,
+        categorical_actions=False
+    )
 
 if __name__ == "__main__":
-    max_steps = 30
-    wrapped_env = init_env(num_players=4)
+    max_steps = 10
+    wrapped_env = init_env(num_players=4, device='cpu')
+    print(wrapped_env.group_map)
     wrapped_env.rollout(max_steps)
 
