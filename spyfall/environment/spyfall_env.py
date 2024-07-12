@@ -63,7 +63,6 @@ class SpyfallEnv(AECEnv):
             )  # 5 action types, num_players target agents
             for a in self.possible_agents   
         }
-        print(self.action_spaces["agent_0"])
  
         self.action_masks = {}
         self.agent_selection = self.possible_agents[0]
@@ -375,7 +374,7 @@ class SpyfallEnv(AECEnv):
     def action_space(self, agent):
         return self.action_spaces[agent]
 
-def init_env(num_players: int, observation_dim: int, device: torch.device) -> PettingZooWrapper:
+def init_env(num_players: int, observation_dim: int, device: torch.device, wrapped: bool=True) -> PettingZooWrapper:
     response = requests.get("https://raw.githubusercontent.com/PepsRyuu/spyfall/master/locations.json")
     locations= json.loads(response.text)['locations']
 
@@ -385,12 +384,15 @@ def init_env(num_players: int, observation_dim: int, device: torch.device) -> Pe
         observation_dim=observation_dim
     )
 
-    return PettingZooWrapper(
+    if wrapped:
+        return PettingZooWrapper(
         env=env,
         use_mask=True,
         device=device,
-        categorical_actions=False
-    )
+            categorical_actions=False
+        )
+    else:
+        return env
 
 if __name__ == "__main__":
     max_steps = 10

@@ -4,12 +4,13 @@ from spyfall.environment.spyfall_env import init_env
 from spyfall.models.policy import init_policy_modules
 from tensordict.nn import TensorDictSequential
 from torchrl.modules import (
-    AdditiveGaussianWrapper,
-    MultiAgentMLP,
     ProbabilisticActor,
     TanhDelta,
 )
 from torchrl.collectors import SyncDataCollector
+from torchrl.data.replay_buffers import ReplayBuffer
+from torchrl.data.replay_buffers.samplers import SamplerWithoutReplacement
+from torchrl.data.replay_buffers.storages import LazyTensorStorage
 
 
 seed = 0
@@ -46,7 +47,8 @@ for group, _ in env.group_map.items():
             "min": -1,
             "max": 1,
         },
-        return_log_prob=False,
+        return_log_prob=True,
+        log_prob_key=(group, "sample_log_prob")
     )
     policies[group] = policy
 
@@ -69,6 +71,14 @@ collector = SyncDataCollector(
     device=device,
     frames_per_batch=frames_per_episode,
     total_frames=frames_per_episode * n_episodes,
+)
+
+replay_buffer = ReplayBuffer(
+    storage=LazyTensorStorage(
+        frames_per_episode, device=device
+    ),
+    sampler=SamplerWithoutReplacement(),
+    batch_size=1,
 )
 
 # env.rollout(
