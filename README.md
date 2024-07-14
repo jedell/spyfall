@@ -10,6 +10,7 @@ This project develops a multi-agent social deduction game for AI research, inspi
 - Multi-agent gameplay
 - Dialogue interactions to deduce roles and strategies.
 - Integration with OpenAI's GPT models for generating responses.
+- Interactive simulation of environment. `python -m spyfall.environment.interactive`
 
 ## Current Implementation
 - Dialogue agents that respond based on game state and past interactions.
