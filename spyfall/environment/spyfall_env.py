@@ -355,6 +355,7 @@ class SpyfallEnv(AECEnv):
 
         encoded_dialogue_history = torch.rand(self.observation_dim)
         self.observations = {a: encoded_dialogue_history for a in self.agents}
+        self.observation = encoded_dialogue_history
         self.infos = {a: {
             "action_mask": self.action_masks[a],
         } for a in self.agents}
@@ -394,10 +395,11 @@ def init_env(num_players: int, observation_dim: int, device: torch.device, wrapp
 
     if wrapped:
         return PettingZooWrapper(
-        env=env,
-        use_mask=True,
-        device=device,
-            categorical_actions=False
+            env=env,
+            use_mask=True,
+            device=device,
+            categorical_actions=False,
+            shared_observation_space=True
         )
     else:
         return env

@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from spyfall.environment.spyfall_env import init_env
 from spyfall.models.policy import init_policy_modules
+from spyfall.models.critic import init_critic_module
 from tensordict.nn import TensorDictSequential
 from torchrl.modules import (
     ProbabilisticActor,
@@ -81,7 +82,8 @@ replay_buffer = ReplayBuffer(
     batch_size=1,
 )
 
-# env.rollout(
-#     max_steps=frames_per_episode,
-#     policy=policy
-# )
+critic = init_critic_module(env, observation_dim, n_agents)
+
+
+print("Running policy:", policy(env.reset()))
+print("Running value:", critic(env.reset()))

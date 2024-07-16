@@ -4,9 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from tensordict import TensorDict
 from tensordict.nn import TensorDictModule
-from torchrl.modules import MultiAgentMLP
 from torchrl.envs.libs.pettingzoo import PettingZooWrapper
 from torchrl.modules.models.utils import _reset_parameters_recursive
 
