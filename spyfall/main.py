@@ -82,7 +82,7 @@ replay_buffer = ReplayBuffer(
     batch_size=1,
 )
 
-critic = init_critic_module(env, observation_dim, n_agents)
+critic = init_critic_module(env, n_agents, observation_dim)
 
 
 print("Running policy:", policy(env.reset()))
