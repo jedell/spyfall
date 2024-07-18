@@ -29,6 +29,31 @@ class NonSpyQuestion(dspy.Signature):
         desc="The question you are asking the target player.",
     )
 
+
+class SpyQuestion(dspy.Signature):
+    f"""
+    {prompts.spyfall_rules_spy}
+
+    You are playing the game Spyfall. You are the spy. 
+    Ask a question to the target player to deduce the game's location.
+    """
+    num_players = dspy.InputField(
+        desc="The number of players in the game.",
+    )
+    location = dspy.InputField(
+        desc="The location of this round. Known to all players, except the spy.",
+    )
+    dialogue_history = dspy.InputField(
+        desc="The dialogue history between players.",
+    )
+    target = dspy.InputField(
+        desc="The player you are asking a question to.",
+    )
+    question = dspy.OutputField(
+        desc="The question you are asking the target player.",
+    )
+
+
 if __name__ == "__main__":
     question = dspy.Predict(NonSpyQuestion)
 
