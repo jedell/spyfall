@@ -13,6 +13,9 @@ class NonSpyQuestion(dspy.Signature):
     num_players = dspy.InputField(
         desc="The number of players in the game.",
     )
+    current_player = dspy.InputField(
+        desc="Your identity.",
+    )
     location = dspy.InputField(
         desc="The location of this round. Known to all players, except the spy.",
     )
@@ -40,8 +43,8 @@ class SpyQuestion(dspy.Signature):
     num_players = dspy.InputField(
         desc="The number of players in the game.",
     )
-    location = dspy.InputField(
-        desc="The location of this round. Known to all players, except the spy.",
+    current_player = dspy.InputField(
+        desc="Your identity.",
     )
     dialogue_history = dspy.InputField(
         desc="The dialogue history between players.",
@@ -59,10 +62,21 @@ if __name__ == "__main__":
 
     out = question(
         num_players="4",
+        current_player="John",
         location="London",
         role="Police",
-        dialogue_history="John: I'm not the spy.\nJane: I'm not the spy.\nDoe: I'm not the spy.\nSpy: I'm not the spy.",
+        dialogue_history="John: I'm not the spy.\nJane: I'm not the spy.\nDoe: I'm not the spy.\nJim: I'm not the spy.",
         target="Spy",
     )
 
+    print(out)
+
+    spy_question = dspy.Predict(SpyQuestion)
+
+    out = spy_question(
+        num_players="4",
+        current_player="Jim",
+        dialogue_history="John: I'm not the spy.\nJane: I'm not the spy.\nDoe: I'm not the spy.\nJim: I'm not the spy.",
+        target="John",
+    )
     print(out)
