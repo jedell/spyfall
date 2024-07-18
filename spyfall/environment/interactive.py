@@ -2,14 +2,14 @@ import numpy as np
 import torch
 from spyfall.environment.spyfall_env import init_env
 
-def simulate(env):
+def simulate(env, auto=False):
     env.reset()
     player = env.agent_selection = np.random.choice(list(env.agents))
     print(f"Player: {player}")
     while True:
         current_agent = env.agent_selection
         message = None
-        if current_agent == player:
+        if current_agent == player and not auto:
             print(f"\nCurrent Agent: {current_agent}")
             print(f"Dialogue History: {env.dialogue_history}")
         
@@ -47,4 +47,4 @@ if __name__ == "__main__":
 
     env = init_env(num_players, observation_dim, device, wrapped=False)
 
-    simulate(env)
+    simulate(env, auto=True)

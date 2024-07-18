@@ -69,7 +69,6 @@ class SpyfallEnv(AECEnv):
         self.agent_selection = self.possible_agents[0]
 
     def set_player_message(self, message):
-        print(f"Setting player message: {message}")
         self.player_message = message
 
     def _select_location(self):
@@ -169,8 +168,7 @@ class SpyfallEnv(AECEnv):
 
     def reset(self, seed=None):
         location_and_roles = self._select_location()
-        print("Starting game with location: ", location_and_roles["title"])
-        print("Roles: ", location_and_roles["roles"])
+        print("Location: ", location_and_roles["title"])
 
         self.location = location_and_roles["title"]
         self.agents = self.possible_agents
@@ -250,11 +248,9 @@ class SpyfallEnv(AECEnv):
         return np.where(action_mask == 1, action, -np.inf)
 
     def step(self, action):
-        print(f"Step {self.timestep}")
         self.timestep += 1
         current_action = action
         current_agent = self.agent_selection
-        print(current_agent)
         self.rewards = {a: 0 for a in self.agents}
         self.terminations = {a: False for a in self.agents}
         self.truncations = {a: False for a in self.agents}
@@ -263,14 +259,12 @@ class SpyfallEnv(AECEnv):
         current_action = self._apply_action_mask(self.action_masks[current_agent], current_action)
         action_type, target_agent = self._get_current_action(current_action)
         target_agent = self.agents[target_agent]
-        print(f"Action type: {action_type}, Target agent: {target_agent}")
         if action_type == 0:  # Question asked
             # check to see if target_agent was target of last dialogue
             if len(self.dialogue_history) > 0:
                 last_target = self.dialogue_history[-1][2]
                 if target_agent == last_target:
                     # TODO how to handle in policy?
-                    print(self.dialogue_history[-1])
                     print("Target agent was target of last dialogue. Sampling a random other last target.")
                     target_agent = random.choice([a for a in self.agents if a != last_target])
 
@@ -407,6 +401,5 @@ def init_env(num_players: int, observation_dim: int, device: torch.device, wrapp
 if __name__ == "__main__":
     max_steps = 10
     wrapped_env = init_env(num_players=4, device='cpu')
-    print(wrapped_env.group_map)
     wrapped_env.rollout(max_steps)
 

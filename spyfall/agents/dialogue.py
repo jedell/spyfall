@@ -1,85 +1,5 @@
 from typing import List, Dict, Tuple
-
-spyfall_rules_spy = """
-In Spyfall, each player except one receives a card showing the same location.
-As the spy, you do not know the location and must figure it out by listening to the questions and answers.
-Your goal is to blend in by asking and answering questions without revealing you are the spy.
-If you can guess the location before the round ends or avoid being identified as the spy, you win.
-"""
-
-spyfall_rules_non_spy = """
-In Spyfall, each player receives a card showing the same location except one, who is the spy.
-Players take turns asking each other questions to determine who knows the location and who might be the spy.
-As a non-spy, your goal is to ask and answer questions subtly to prove you know the location without giving away too much detail to the spy.
-If you identify the spy or the spy fails to guess the location before the round ends, the non-spies win.
-"""
-
-spyfall_question_prompt = spyfall_rules_non_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are not the spy. The location is {location} and your role is {role}.
-
-Dialogue History:
-{dialogue_history}
-
-Ask a question to <Player {target}> to deduce if they are the spy without revealing the location.
-"""
-
-spyfall_question_prompt_spy = spyfall_rules_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are the spy.
-
-Dialogue History:
-{dialogue_history}
-
-Ask a question to <Player {target}> to deduce the game's location.
-"""
-
-spyfall_answer_prompt = spyfall_rules_non_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are not the spy. The location is {location} and your role is {role}.
-
-Dialogue History:
-{dialogue_history}
-
-<Player {target}> asked you: {question}
-
-Answer the question as to subtly prove you're not the spy without revealing the location.
-"""
-
-spyfall_answer_prompt_spy = spyfall_rules_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are the spy.
-
-Dialogue History:
-{dialogue_history}
-
-<Player {target}> asked you: {question}
-
-Answer the question without revealing yourself.
-"""
-
-vote_prompt_non_spy = spyfall_rules_non_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are not the spy. The location is {location} and your role is {role}.
-
-Dialogue History:
-{dialogue_history}
-
-It's time to vote. Based on the dialogue, do you think <Player {target}> is the spy? Answer with "Yes" or "No".
-"""
-
-spyfall_guess_prompt = spyfall_rules_spy + """
-You are playing a game of Spyfall with {num_players} players. You are <Player {current_player}>. 
-You are the spy.
-
-Dialogue History:
-{dialogue_history}
-
-Locations:
-{locations}
-
-Based on the dialogue history and the list of locations, guess the location of the game, if correct, you win.
-"""
+from spyfall.agents import prompts
 
 class GeneratorInterface:
 
@@ -128,11 +48,11 @@ class DialogueAgent:
             dialogue_history = self.format_dialogue_history(observation["dialogue_history"])
 
             if is_spy:
-                prompt = spyfall_question_prompt_spy.format(
+                prompt = prompts.spyfall_question_prompt_spy.format(
                     **{**observation, "dialogue_history": dialogue_history}, target=target
                 )
             else:
-                prompt = spyfall_question_prompt.format(
+                prompt = prompts.spyfall_question_prompt.format(
                     **{**observation, "dialogue_history": dialogue_history}, target=target
                 )
 
@@ -145,11 +65,11 @@ class DialogueAgent:
                 dialogue_history = self.format_dialogue_history(observation["dialogue_history"][:-1])
 
             if is_spy:
-                prompt = spyfall_answer_prompt_spy.format(
+                prompt = prompts.spyfall_answer_prompt_spy.format(
                     **{**observation, "dialogue_history": dialogue_history}, target=target, question=question
                 )
             else:
-                prompt = spyfall_answer_prompt.format(
+                prompt = prompts.spyfall_answer_prompt.format(
                     **{**observation, "dialogue_history": dialogue_history}, target=target, question=question
                 )
 
@@ -161,7 +81,7 @@ class DialogueAgent:
             if is_spy:
                 message = "No"
             else:
-                prompt = vote_prompt_non_spy.format(
+                prompt = prompts.vote_prompt_non_spy.format(
                     **{**observation, "dialogue_history": dialogue_history}, target=target
                 )
                 message = self.generate_response(prompt, "vote the following for", observation["current_player"], target)
@@ -176,7 +96,7 @@ class DialogueAgent:
         elif current_action == 4: # guess
             
             dialogue_history = self.format_dialogue_history(observation["dialogue_history"])
-            prompt = spyfall_guess_prompt.format(
+            prompt = prompts.spyfall_guess_prompt.format(
                 **{**observation, "dialogue_history": dialogue_history},
                 target=target,
                 locations="\n".join([loc['title'] for loc in self.locations])
