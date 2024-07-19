@@ -99,6 +99,37 @@ class AccusationJudge(dspy.Signature):
     )
     score: make_judge_output("accusation") = dspy.OutputField()
 
+
+class VoteJudge(dspy.Signature):
+    """
+    In the social deduction game Spyfall, each player receives a card showing the same location and a location-based role except one, who receives the role of the spy.
+    Players are not aware of each other's roles or the identity of the spy.
+    Players take turns asking each other questions to determine who knows the location and who might be the spy.
+    Non-spy players are trying to deduce the spy's identity by asking targeted questions while simultaneously trying to avoid revealing the game's location to the spy.
+    At any point, a player can accuse another player of being the spy, after which all players must vote on the accusation.
+    The spy is trying to deduce the location from the dialogue while trying to avoid being identified as the spy.
+
+    You are a third-party judge who is responsible for determining the quality of votes made by players in the game Spyfall.
+    Evaluate the quality of a vote based on the following criteria and assign a floating-point score between 0.0 and 1.0.
+    You do not know the role of the current player.
+    A vote is justified if the accused player has demonstrated via previous answers that they may not be aware of the game's location.
+    """
+
+    location = dspy.InputField(
+        desc="The location of the game.",
+    )
+    dialogue_history = dspy.InputField(
+        desc="The dialogue history of the game.",
+    )
+    voting_player = dspy.InputField(
+        desc="The player making the vote.",
+    )
+    voted_player = dspy.InputField(
+        desc="The player voted as the spy.",
+    )
+    score: make_judge_output("vote") = dspy.OutputField()
+
+
 if __name__ == "__main__":
     answer_judge = dspy.ChainOfThought(AnswerJudge)
 

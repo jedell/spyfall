@@ -12,6 +12,7 @@ from gymnasium.spaces import Box
 from torchrl.envs.libs.pettingzoo import PettingZooWrapper
 from pettingzoo import AECEnv
 
+from spyfall.agents.modules.dialogue import DialogueModule
 from spyfall.agents.dialogue import DialogueAgent, OpenAIGenerator, OPENAI_API_KEY
 
 class SpyfallAgent(AECEnv):
@@ -46,7 +47,8 @@ class SpyfallEnv(AECEnv):
         self.terminations = None
         self.truncations = None
             
-        self.dialogue_agent = DialogueAgent(self.spy_idx, locations, OpenAIGenerator(OPENAI_API_KEY))
+        # self.dialogue_agent = DialogueAgent(self.spy_idx, locations, OpenAIGenerator(OPENAI_API_KEY))
+        self.dialogue_agent = DialogueModule(self.spy_idx, locations)
         self.dialogue_history = None
         self.player_message = None
 
@@ -220,7 +222,7 @@ class SpyfallEnv(AECEnv):
         if self.player_message is not None:
             message = self.player_message
         else:
-            message = self.dialogue_agent.act(
+            message = self.dialogue_agent.forward(
                 {
                     "current_player": current_agent, 
                     "num_players": self.num_players, 
@@ -230,6 +232,7 @@ class SpyfallEnv(AECEnv):
                 },
                 [action_type, target_agent]
             )
+            message = getattr(message, message.keys()[0])
 
         dialogue = dialogue_template.format(current_agent=current_agent, target_agent=target_agent, message=message)
         self.add_dialogue_history(current_agent, action_type, target_agent, dialogue)

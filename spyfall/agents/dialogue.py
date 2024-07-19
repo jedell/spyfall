@@ -32,7 +32,7 @@ class DialogueAgent:
             string += f"<Player {curr_player_idx}>: {action_str[dialogue[1]]} <Player {dialogue[2]}>: {dialogue[3]}\n"
         return string
 
-    def act(self, observation, action) -> str:
+    def forward(self, observation, action) -> str:
         """
         Generates messages based on the action and observation.
         observation: dict, dialogue_history: list, current_agent: int, location: str, role: str
