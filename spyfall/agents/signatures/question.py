@@ -26,7 +26,7 @@ class NonSpyQuestion(dspy.Signature):
         desc="Your role in the location.",
     )
     dialogue_history = dspy.InputField(
-        desc="The dialogue history between players.",
+        desc="The dialogue history between players. Possibly empty.",
     )
     target = dspy.InputField(
         desc="The player you are asking a question to.",
@@ -55,7 +55,7 @@ class SpyQuestion(dspy.Signature):
         desc="Your identity.",
     )
     dialogue_history = dspy.InputField(
-        desc="The dialogue history between players.",
+        desc="The dialogue history between players. Possibly empty.",
     )
     target = dspy.InputField(
         desc="The player you are asking a question to.",

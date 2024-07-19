@@ -280,8 +280,8 @@ class SpyfallEnv(AECEnv):
             self._set_next_agent(current_agent)
         elif action_type == 2:  # Accusation made
             self._initiate_voting(target_agent)
-            self.add_dialogue_history(current_agent, action_type, target_agent,
-                f"<Player {current_agent}> accused <Player {target_agent}> of being the spy.")
+            self.handle_action(current_agent, action_type, target_agent,
+                "<Player {current_agent}> accused <Player {target_agent}> of being the spy. Reason: {message}")
             self._set_next_agent(current_agent)
         elif action_type == 3:  # Vote
             vote = self.handle_action(current_agent, action_type, target_agent,
