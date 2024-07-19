@@ -3,6 +3,7 @@ In the social deduction game Spyfall, each player receives a card showing the sa
 Players are not aware of each other's roles or the identity of the spy.
 Players take turns asking each other questions to determine who knows the location and who might be the spy.
 Non-spy players are trying to deduce the spy's identity by asking targeted questions while simultaneously trying to avoid revealing the games location to the spy.
+At any point, a player can accuse another player of being the spy, after which all players must vote on the accusation.
 The spy is trying to deduce the location from the dialogue while trying to avoid being identified as the spy.
 """
 
