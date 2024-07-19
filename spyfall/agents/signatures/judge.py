@@ -1,4 +1,6 @@
 import dspy
+from spyfall.agents import prompts
+from spyfall.agents.signatures import docstring_parameter
 from pydantic import BaseModel, Field
 
 gpt4 = dspy.OpenAI(model='gpt-4-turbo-preview', max_tokens=250)
@@ -25,10 +27,10 @@ class QuestionJudge(dspy.Signature):
     You are a third-party judge who is responsible for determining the quality of questions asked by players in the game Spyfall.
     Evaluate the quality of a question based on the following criteria and assign a floating-point score between 0.0 and 1.0.
     You do not know the role of the current player.
-    Evaluation Criteria:
-    - Does the question indicate the asker is aware of the location?
-    - Does the question reveal too much information about the location to the spy?
-    - Does the question reveal enough information to non-spy players to confirm the asker is not the spy?
+    Scoring:
+    negative: The question reveals information about the location to the spy.
+    neutral: The question is not relevant to the location or too vague.
+    positive: The question does not reveal information about the location to the spy and is relevant to the location.
     """
 
     location = dspy.InputField(
@@ -53,7 +55,7 @@ class AnswerJudge(dspy.Signature):
     You do not know the role of the current player.
     Scoring:
     negative: The answer reveals information about the location to the spy.
-    neutral: The answer is not relevant to the location or vague.
+    neutral: The answer is not relevant to the location or too vague.
     positive: The answer does not reveal information about the location to the spy.
     """
 
@@ -104,6 +106,6 @@ if __name__ == "__main__":
         location="Airplane",
         question="What kind of activities can one do at this location?",
         answer="One can enjoy in-flight entertainment, have a beverage service, and maybe even relax in a comfortable seat..",
-        config=dict(temperature=0.15)
+        config=dict(temperature=0.5)
     )
     print(result)
