@@ -1,3 +1,11 @@
+spyfall_rules_judge = """
+In the social deduction game Spyfall, each player receives a card showing the same location and a location-based role except one, who receives the role of the spy.
+Players are not aware of each other's roles or the identity of the spy.
+Players take turns asking each other questions to determine who knows the location and who might be the spy.
+Non-spy players are trying to deduce the spy's identity by asking targeted questions while simultaneously trying to avoid revealing the games location to the spy.
+The spy is trying to deduce the location from the dialogue while trying to avoid being identified as the spy.
+"""
+
 spyfall_rules_spy = """
 In Spyfall, each player receives a card showing the same location and a location-based role except one, who receives the role of the spy.
 Players are not aware of each other's roles or the identity of the spy.

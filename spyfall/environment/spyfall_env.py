@@ -266,7 +266,7 @@ class SpyfallEnv(AECEnv):
                 if target_agent == last_target:
                     # TODO how to handle in policy?
                     print("Target agent was target of last dialogue. Sampling a random other last target.")
-                    target_agent = random.choice([a for a in self.agents if a != last_target])
+                    target_agent = random.choice([a for a in self.agents if a != last_target and a != current_agent])
 
             self.handle_action(current_agent, action_type, target_agent,
                 "<Player {current_agent}> asked <Player {target_agent}>: {message}.")
