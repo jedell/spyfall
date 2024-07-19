@@ -8,7 +8,7 @@ class Vote(dspy.Signature):
     As a non-spy, your goal is to ask and answer questions subtly to prove you know the location without giving away too much detail to the spy.
     If you identify the spy or the spy fails to guess the location before the round ends, the non-spies win.
 
-    You are playing the game Spyfall. You are not the spy. 
+    You are playing the game Spyfall.
     Based on the dialogue history, vote if you think the target player is the spy. Answer with "Yes" or "No".
     """
 
